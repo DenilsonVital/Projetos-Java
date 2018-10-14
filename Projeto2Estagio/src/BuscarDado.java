@@ -1,8 +1,10 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class BuscarDado {
 
@@ -39,4 +41,25 @@ public class BuscarDado {
 			System.out.println(e.getMessage());
 		}
 	}
+	
+	public static ArrayList<Pessoa> buscarPorNome(String nome) {
+		ArrayList<Pessoa> pessoas = new ArrayList<Pessoa>();
+		try(Connection conn = new Conexao().getConection()) {
+			PreparedStatement ps = conn.prepareStatement();
+			ps.setString(1, "%"+nome+"%");
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()){
+				Pessoa pessoa = new Pessoa();
+				pessoa.setNome(rs.getString("nome"));
+				pessoa.setRg(rs.getString("rg"));
+				pessoas.add(pessoa);
+			}
+			rs.close();
+			ps.close();				
+		} catch (SQLException e) {
+			System.out.println("Error: pessoa não encontrada!");
+			e.getMessage();
+		}	
+		return pessoas;
+}
 }
